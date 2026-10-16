@@ -2,6 +2,7 @@ import os
 import re
 import requests
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List
 from dotenv import load_dotenv
@@ -16,7 +17,21 @@ app = FastAPI(
     version="2.0.0"
 )
 
+# CORS Middleware added so your frontend UI can communicate locally without being blocked
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Request model for handling incoming JSON body from the UI
+class EvaluationRequest(BaseModel):
+    github_url: str = Field(description="Public GitHub repository URL (e.g., https://github.com/owner/repo)")
+    job_description: str = Field(description="Target job posting text or requirements.")
 
 class EvidenceItem(BaseModel):
     skill_name: str = Field(description="Name of the skill or technology evaluated.")
@@ -36,19 +51,16 @@ def fetch_github_repo_data(github_url: str) -> str:
     match = re.search(r"github\.com/([^/]+)/([^/]+)", github_url)
     if not match:
         raise HTTPException(status_code=400, detail="Invalid GitHub URL format. Use https://github.com/owner/repo")
-    
     owner, repo = match.groups()
     repo = repo.removesuffix(".git")
 
     headers = {"Accept": "application/vnd.github+json"}
-    
     tree_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/main?recursive=1"
     tree_res = requests.get(tree_url, headers=headers)
-    
     if tree_res.status_code != 200:
         tree_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/master?recursive=1"
         tree_res = requests.get(tree_url, headers=headers)
-        
+    
     file_list = []
     if tree_res.status_code == 200:
         tree_data = tree_res.json()
@@ -56,7 +68,6 @@ def fetch_github_repo_data(github_url: str) -> str:
 
     readme_url = f"https://api.github.com/repos/{owner}/{repo}/readme"
     readme_res = requests.get(readme_url, headers=headers)
-    
     readme_content = "No README found."
     if readme_res.status_code == 200:
         readme_data = readme_res.json()
@@ -67,14 +78,13 @@ def fetch_github_repo_data(github_url: str) -> str:
             readme_content = "Could not decode README."
 
     summary = f"""
-    REPOSITORY: {owner}/{repo}
-    
-    FILE STRUCTURE:
-    {'\n'.join(file_list[:100] if file_list else ['No files retrieved'])}
+REPOSITORY: {owner}/{repo}
+FILE STRUCTURE:
+{'\n'.join(file_list[:100] if file_list else ['No files retrieved'])}
 
-    README.MD CONTENT:
-    {readme_content[:3000]}
-    """
+README.MD CONTENT:
+{readme_content[:3000]}
+"""
     return summary
 
 @app.get("/")
@@ -86,15 +96,15 @@ def read_root():
     }
 
 @app.post("/api/evaluate-repo", response_model=EvaluationReport)
-def evaluate_github_repo(github_url: str, job_description: str):
-    repo_summary = fetch_github_repo_data(github_url)
+def evaluate_github_repo(request: EvaluationRequest):
+    repo_summary = fetch_github_repo_data(request.github_url)
 
     prompt = f"""
     You are an expert AI Career Coach and Adversarial Recruiter.
     Evaluate the following GitHub repository summary against the target job description.
 
     JOB DESCRIPTION:
-    {job_description}
+    {request.job_description}
 
     GITHUB REPO SUMMARY:
     {repo_summary}
