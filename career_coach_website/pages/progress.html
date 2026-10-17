@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Progress | CareerPilot</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .progress-wrap { max-width:1150px; margin:auto; color:#edf0ff; }
+        .progress-card { background:linear-gradient(145deg,#151d3b,#10162c); border:1px solid #30365b; border-radius:18px; padding:23px; margin-bottom:20px; }
+        .progress-muted { color:#a9b3d3; line-height:1.7; }
+        .progress-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+        .progress-stat { background:#171f3d; border:1px solid #30365b; border-radius:14px; padding:18px; }
+        .progress-stat strong { display:block; font-size:28px; margin:10px 0 5px; color:#e8e3ff; }
+        .progress-layout { display:grid; grid-template-columns:1.3fr 1fr; gap:20px; }
+        .progress-track { height:9px; background:#292f4e; border-radius:20px; overflow:hidden; margin:10px 0 18px; }
+        .progress-track span { display:block; height:100%; background:linear-gradient(90deg,#6555dc,#b18cff); border-radius:20px; transition:width .2s; }
+        .task-row { display:flex; gap:12px; align-items:flex-start; padding:15px 0; border-bottom:1px solid #2b3353; }
+        .task-row:last-child { border-bottom:0; }
+        .task-row input { margin-top:5px; accent-color:#8b5cf6; width:17px; height:17px; }
+        .task-copy { flex:1; line-height:1.5; }
+        .task-copy small { display:block; color:#a9b3d3; margin-top:4px; }
+        .task-done { text-decoration:line-through; opacity:.65; }
+        .progress-btn { background:linear-gradient(100deg,#6555dc,#8b5cf6); color:white; border:0; border-radius:11px; padding:12px 16px; cursor:pointer; font-size:14px; font-weight:600; }
+        .progress-secondary { background:#252748; border:1px solid #42416e; color:#e6e5ff; border-radius:11px; padding:11px 14px; cursor:pointer; }
+        .week-bars { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); align-items:end; gap:12px; height:165px; padding-top:15px; }
+        .week-day { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; gap:9px; }
+        .week-bar { width:min(100%,34px); min-height:4px; background:linear-gradient(180deg,#ad8bff,#6555dc); border-radius:8px 8px 3px 3px; }
+        .week-day small { color:#a9b3d3; font-size:12px; }
+        .empty-state { padding:20px; background:#151c35; border-radius:12px; color:#a9b3d3; line-height:1.7; }
+        @media(max-width:900px) { .progress-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .progress-layout { grid-template-columns:1fr; } }
+        @media(max-width:520px) { .progress-grid { grid-template-columns:1fr 1fr; } .progress-card { padding:16px; } .week-bars { gap:6px; } }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="logo">✦ CareerPilot</div>
+        <p class="sidebar-label">WORKSPACE</p>
+        <nav>
+            <a href="../index.html">⌂ Overview</a>
+            <a href="analysis.html">▤ Portfolio Analysis</a>
+            <a href="coach.html">✧ AI Coach</a>
+            <a href="training.html">✓ Evaluation Test</a>
+            <a href="progress.html" class="active">↗ Weekly Progress</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <span>✦</span> Small steps. Real progress.
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">YOUR LEARNING JOURNEY</p>
+                <h1>Weekly Progress 📈</h1>
+                <p>Track what you complete, what you learn and where you improve.</p>
+            </div>
+        </header>
+
+        <div class="progress-wrap">
+            <section class="progress-card">
+                <span class="coach-tag" style="display:inline-block;padding:7px 11px;border-radius:20px;background:#27234f;color:#c7bdff;font-size:13px">YOUR WEEK AT A GLANCE</span>
+                <h2 style="margin-top:16px">Consistency creates growth.</h2>
+                <p class="progress-muted">Complete your planned activities and review your evaluation results to understand your progress.</p>
+
+                <div class="progress-grid">
+                    <div class="progress-stat">
+                        <span class="progress-muted">Tasks completed</span>
+                        <strong id="tasksCompleted">—</strong>
+                        <span class="progress-muted">From this demo's tasks</span>
+                    </div>
+                    <div class="progress-stat">
+                        <span class="progress-muted">Weekly completion</span>
+                        <strong id="completionRate">—</strong>
+                        <span class="progress-muted">Completed tasks / total</span>
+                    </div>
+                    <div class="progress-stat">
+                        <span class="progress-muted">Evaluations taken</span>
+                        <strong id="evaluationsTaken">—</strong>
+                        <span class="progress-muted">Saved evaluation attempts</span>
+                    </div>
+                    <div class="progress-stat">
+                        <span class="progress-muted">Latest test score</span>
+                        <strong id="latestScore">—</strong>
+                        <span class="progress-muted">Not a measure of project experience</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="progress-layout">
+                <section class="progress-card">
+                    <h2>This week's goals</h2>
+                    <p class="progress-muted">Tick activities as you complete them. These demo tasks use a separate storage key.</p>
+
+                    <div id="taskList">
+                        <label class="task-row">
+                            <input type="checkbox" data-task="learn">
+                            <span class="task-copy">Practice a technical concept<small>Strengthen a skill identified by your coach.</small></span>
+                        </label>
+                        <label class="task-row">
+                            <input type="checkbox" data-task="project">
+                            <span class="task-copy">Improve one portfolio project<small>Add functionality, tests or clearer documentation.</small></span>
+                        </label>
+                        <label class="task-row">
+                            <input type="checkbox" data-task="evaluation">
+                            <span class="task-copy">Complete a skill evaluation<small>Check your understanding and review the feedback.</small></span>
+                        </label>
+                        <label class="task-row">
+                            <input type="checkbox" data-task="review">
+                            <span class="task-copy">Review mistakes and revise<small>Practice the concepts you found difficult.</small></span>
+                        </label>
+                    </div>
+
+                    <p class="progress-muted" id="taskSummary" aria-live="polite">Loading tasks...</p>
+                    <div class="progress-track"><span id="taskBar" style="width:0%"></span></div>
+                    <button type="button" class="progress-secondary" id="resetDemoTasks">Reset demo tasks</button>
+                </section>
+
+                <section class="progress-card">
+                    <h2>Evaluation history</h2>
+                    <p class="progress-muted">Results saved by the Evaluation Test will appear here when available.</p>
+                    <div id="evaluationHistory" class="empty-state">
+                        No evaluation results found yet. Complete an evaluation to start building your history.
+                    </div>
+                    <a href="training.html" class="progress-btn" style="display:inline-block;text-decoration:none;margin-top:17px">Take an evaluation →</a>
+                </section>
+            </div>
+
+            <section class="progress-card">
+                <h2>Activity snapshot</h2>
+                <p class="progress-muted">Daily task completions from the current demo task list. This is activity tracking, not an AI-verified skill score.</p>
+                <div id="weeklyChart" class="week-bars" aria-label="Daily completed tasks chart"></div>
+                <p class="progress-muted" id="chartCaption">Complete tasks to see your activity chart.</p>
+            </section>
+
+            <section class="progress-card">
+                <h2>Your next step ✨</h2>
+                <p class="progress-muted">
+                    Use your portfolio analysis to identify the next skill to strengthen.
+                    Ask the AI Coach for practical guidance, then return here to track your learning.
+                    Run a fresh portfolio analysis when you have new project evidence.
+                </p>
+                <a href="coach.html" class="progress-btn" style="display:inline-block;text-decoration:none">Talk to AI Coach →</a>
+                <a href="analysis.html" class="progress-secondary" style="display:inline-block;text-decoration:none;margin-left:8px">Review analysis</a>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+    /*
+      Demo-only storage keys:
+      - careerPilotDemoTasks
+      - careerPilotDemoDailyActivity
+
+      Evaluation history is read from careerPilotEvaluationHistory.
+      This script does not clear or overwrite other progress keys.
+      Merge this UI with your existing progress logic before replacing
+      an already-working progress.html.
+    */
+    const TASK_KEY = "careerPilotDemoTasks";
+    const ACTIVITY_KEY = "careerPilotDemoDailyActivity";
+    const EVALUATION_KEY = "careerPilotEvaluationHistory";
+
+    const taskDefinitions = [
+        { id: "learn", label: "Practice a technical concept" },
+        { id: "project", label: "Improve one portfolio project" },
+        { id: "evaluation", label: "Complete a skill evaluation" },
+        { id: "review", label: "Review mistakes and revise" }
+    ];
+
+    function readJSON(key, fallback) {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(key));
+            return parsed ?? fallback;
+        } catch {
+            return fallback;
+        }
+    }
+
+    function getTasks() {
+        const stored = readJSON(TASK_KEY, {});
+        return stored && typeof stored === "object" ? stored : {};
+    }
+
+    function getTodayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+
+    function getActivity() {
+        return readJSON(ACTIVITY_KEY, {});
+    }
+
+    function renderTasks() {
+        const tasks = getTasks();
+        let completed = 0;
+
+        document.querySelectorAll("[data-task]").forEach(input => {
+            const id = input.dataset.task;
+            input.checked = Boolean(tasks[id]);
+            const copy = input.closest(".task-row").querySelector(".task-copy");
+            copy.classList.toggle("task-done", input.checked);
+            if (input.checked) completed++;
+        });
+
+        const total = taskDefinitions.length;
+        const percent = Math.round(completed / total * 100);
+
+        document.getElementById("tasksCompleted").textContent = `${completed}/${total}`;
+        document.getElementById("completionRate").textContent = `${percent}%`;
+        document.getElementById("taskSummary").textContent =
+            `${completed} of ${total} demo tasks completed this week.`;
+        document.getElementById("taskBar").style.width = `${percent}%`;
+
+        renderActivity();
+    }
+
+    document.querySelectorAll("[data-task]").forEach(input => {
+        input.addEventListener("change", () => {
+            const tasks = getTasks();
+            const id = input.dataset.task;
+            const wasCompleted = Boolean(tasks[id]);
+            tasks[id] = input.checked;
+
+            try {
+                localStorage.setItem(TASK_KEY, JSON.stringify(tasks));
+
+                if (input.checked && !wasCompleted) {
+                    const activity = getActivity();
+                    const today = getTodayKey();
+                    activity[today] = (Number(activity[today]) || 0) + 1;
+                    localStorage.setItem(ACTIVITY_KEY, JSON.stringify(activity));
+                }
+            } catch (error) {
+                console.warn("Demo progress could not be saved.", error);
+            }
+
+            renderTasks();
+        });
+    });
+
+    function renderEvaluations() {
+        const history = readJSON(EVALUATION_KEY, []);
+        const valid = Array.isArray(history) ? history : [];
+
+        document.getElementById("evaluationsTaken").textContent = valid.length;
+
+        const latest = valid[valid.length - 1];
+        document.getElementById("latestScore").textContent =
+            latest && Number.isFinite(Number(latest.percent))
+                ? `${Number(latest.percent)}%`
+                : "—";
+
+        const container = document.getElementById("evaluationHistory");
+        container.replaceChildren();
+
+        if (!valid.length) {
+            container.className = "empty-state";
+            container.textContent = "No evaluation results found yet. Complete an evaluation to start building your history.";
+            return;
+        }
+
+        container.className = "";
+        valid.slice(-5).reverse().forEach(item => {
+            const row = document.createElement("div");
+            row.style.cssText = "padding:13px 0;border-bottom:1px solid #2b3353;line-height:1.6";
+
+            const title = document.createElement("strong");
+            title.textContent = `${item.skill || "Skill assessment"} — ${Number(item.percent) || 0}%`;
+            title.style.color = "#e8e3ff";
+
+            const details = document.createElement("p");
+            details.className = "progress-muted";
+            details.style.margin = "5px 0 0";
+            const date = item.date ? new Date(item.date) : null;
+            details.textContent =
+                `${Number(item.score) || 0}/${Number(item.total) || 0} correct` +
+                (date && !Number.isNaN(date.getTime()) ? ` · ${date.toLocaleDateString()}` : "");
+
+            row.append(title, details);
+            container.appendChild(row);
+        });
+    }
+
+    function renderActivity() {
+        const activity = getActivity();
+        const chart = document.getElementById("weeklyChart");
+        chart.replaceChildren();
+
+        const days = [];
+        for (let offset = 6; offset >= 0; offset--) {
+            const date = new Date();
+            date.setDate(date.getDate() - offset);
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+            days.push({
+                key,
+                label: date.toLocaleDateString(undefined, { weekday: "short" }),
+                count: Math.max(0, Number(activity[key]) || 0)
+            });
+        }
+
+        const max = Math.max(1, ...days.map(day => day.count));
+
+        days.forEach(day => {
+            const col = document.createElement("div");
+            col.className = "week-day";
+
+            const bar = document.createElement("div");
+            bar.className = "week-bar";
+            bar.style.height = `${Math.max(4, day.count / max * 115)}px`;
+            bar.title = `${day.count} task completion(s)`;
+
+            const label = document.createElement("small");
+            label.textContent = day.label;
+
+            col.append(bar, label);
+            chart.appendChild(col);
+        });
+
+        const total = days.reduce((sum, day) => sum + day.count, 0);
+        document.getElementById("chartCaption").textContent =
+            `${total} task completion event(s) recorded in the last 7 days.`;
+    }
+
+    document.getElementById("resetDemoTasks").addEventListener("click", () => {
+        if (!confirm("Reset only the demo task checklist? Your evaluation history and other progress records will remain unchanged.")) return;
+
+        try {
+            localStorage.removeItem(TASK_KEY);
+            renderTasks();
+        } catch (error) {
+            console.warn("Demo tasks could not be reset.", error);
+        }
+    });
+
+    renderTasks();
+    renderEvaluations();
+</script>
+</body>
+</html>

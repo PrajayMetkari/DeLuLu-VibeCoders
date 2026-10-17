@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b18">
+
+  <title>Portfolio Intelligence | CareerPilot AI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/app.js" defer></script>
+  <script src="../js/api.js" defer></script>
+</head>
+
+<body>
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">✦</span>
+      <span>CareerPilot<span class="brand-ai"> AI</span></span>
+    </a>
+
+    <div class="workspace-label">YOUR WORKSPACE</div>
+
+    <nav class="side-nav">
+      <a class="nav-link" href="../index.html">
+        <span class="nav-icon">⌂</span> Overview
+      </a>
+
+      <a class="nav-link active" href="analysis.html">
+        <span class="nav-icon">◈</span> Portfolio Analysis
+      </a>
+
+      <a class="nav-link" href="coach.html">
+        <span class="nav-icon">✧</span> AI Career Coach
+      </a>
+
+      <a class="nav-link" href="training.html">
+        <span class="nav-icon">▤</span> Learning Roadmap
+      </a>
+
+      <a class="nav-link" href="progress.html">
+        <span class="nav-icon">◷</span> Weekly Mastery
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-help-icon">?</div>
+      <div>
+        <strong>Evidence before assumptions</strong>
+        <p>Understand what your portfolio demonstrates.</p>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      Worcflow AI Career Coach · Prototype
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="topbar">
+      <button class="mobile-menu" id="menuToggle" aria-label="Toggle navigation">☰</button>
+
+      <div class="breadcrumb">
+        <a href="../index.html">Workspace</a>
+        <span>/</span>
+        <strong>Portfolio Analysis</strong>
+      </div>
+
+      <div class="topbar-right">
+        <span class="status-dot"></span>
+        <span>Portfolio intelligence</span>
+        <div class="avatar">S</div>
+      </div>
+    </header>
+
+    <section class="page-wrap">
+
+      <div class="page-title-row">
+        <div>
+          <p class="eyebrow">CAREERPILOT AI · PORTFOLIO INTELLIGENCE</p>
+          <h1>Let your work speak for you.</h1>
+          <p class="subheading">
+            Compare your repository with a real job description. Explore the
+            returned match score, skill evidence, and areas that deserve attention.
+            Your results are based on the response received from your backend.
+          </p>
+        </div>
+      </div>
+
+      <!-- INPUT SECTION -->
+      <section class="panel">
+
+        <div class="panel-heading">
+          <div>
+            <h2>Evaluate your portfolio</h2>
+            <p>Provide your repository information and the role you want to pursue.</p>
+          </div>
+
+          <span class="tag violet">BACKEND CONNECTED</span>
+        </div>
+
+        <form id="analysisForm">
+
+          <div class="field-group">
+            <label for="repoSummary">GitHub repository URL or repository summary</label>
+
+            <textarea
+              class="textarea"
+              id="repoSummary"
+              name="repo_summary"
+              placeholder="Paste your GitHub repository URL or a summary of your repository..."
+              required
+            ></textarea>
+
+            <span class="field-hint">
+              Use a public repository or provide repository text that your backend can evaluate.
+            </span>
+          </div>
+
+          <div class="field-group">
+            <label for="jobDescription">Target job description</label>
+
+            <textarea
+              class="textarea"
+              id="jobDescription"
+              name="job_description"
+              placeholder="Paste the job or internship description, including required skills and responsibilities..."
+              required
+            ></textarea>
+
+            <span class="field-hint">
+              A specific job posting helps make the comparison more relevant.
+            </span>
+          </div>
+
+          <div class="form-actions">
+            <button class="button button-primary" id="evaluateButton" type="submit">
+              Analyse portfolio ↗
+            </button>
+
+            <span class="field-hint">
+              Results will appear below after the backend responds.
+            </span>
+          </div>
+
+        </form>
+
+      </section>
+
+      <!-- STATUS -->
+      <section class="result-section" aria-live="polite">
+        <div id="analysisStatus" class="notice" role="status">
+          Your analysis results will appear here. Submit the form to begin.
+        </div>
+      </section>
+
+      <!-- VISUAL SUMMARY -->
+      <section id="evaluationSummary" class="result-section hidden">
+
+        <div class="page-title-row">
+          <div>
+            <p class="eyebrow">YOUR RESULTS</p>
+            <h2>Portfolio at a glance</h2>
+            <p class="subheading" style="font-size:14px;">
+              These summaries should reflect the actual fields returned by the backend.
+            </p>
+          </div>
+        </div>
+
+        <div id="evaluationStats" class="stats-grid"></div>
+
+      </section>
+
+      <!-- CHARTS -->
+      <section id="evaluationCharts" class="result-section hidden">
+
+        <div class="page-title-row">
+          <div>
+            <p class="eyebrow">VISUAL BREAKDOWN</p>
+            <h2>Understand your results</h2>
+            <p class="subheading" style="font-size:14px;">
+              Visual summaries help you identify patterns without having to read raw JSON.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+
+          <article class="panel">
+            <h3>Skill evidence breakdown</h3>
+            <p class="field-hint">
+              The chart will use evidence categories found in the backend response.
+            </p>
+            <div id="evidenceChart" class="chart-container"></div>
+          </article>
+
+          <article class="panel">
+            <h3>Skill-level overview</h3>
+            <p class="field-hint">
+              A comparison of returned skill statuses, where available.
+            </p>
+            <div id="skillChart" class="chart-container"></div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- EVIDENCE -->
+      <section id="evaluationEvidence" class="result-section hidden">
+
+        <div class="page-title-row">
+          <div>
+            <p class="eyebrow">SHOW YOUR WORK</p>
+            <h2>Evidence behind the assessment</h2>
+            <p class="subheading" style="font-size:14px;">
+              Review what the backend found, the status it assigned, and its explanation.
+            </p>
+          </div>
+        </div>
+
+        <div id="evidenceCards" class="evidence-list"></div>
+
+      </section>
+
+      <!-- OTHER FINDINGS -->
+      <section id="evaluationFindings" class="result-section hidden">
+        <div class="panel">
+          <h2>Additional findings</h2>
+          <div id="findingsContent"></div>
+        </div>
+      </section>
+
+      <!-- FULL RESPONSE: KEEP FOR DEBUGGING -->
+      <section id="evaluationResults" class="result-section">
+
+        <div class="panel">
+
+          <div class="panel-heading">
+            <div>
+              <h2>Full backend response</h2>
+              <p>
+                The original response is retained so you can inspect fields
+                that are not yet represented in the visual dashboard.
+              </p>
+            </div>
+          </div>
+
+          <pre id="rawResponse" class="response-json">No backend response received yet.</pre>
+
+        </div>
+
+      </section>
+
+      <div id="resultNotice" class="notice hidden" style="margin-top:18px;">
+        Evaluation received from your backend.
+      </div>
+
+      <footer class="page-footer">
+        <span>CareerPilot AI</span>
+        <span>Evidence-based career guidance for students.</span>
+      </footer>
+
+    </section>
+  </main>
+</div>
+</body>
+</html>
