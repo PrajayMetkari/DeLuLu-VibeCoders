@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Coach | CareerPilot</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .coach-layout { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr); gap:22px; }
+        .coach-card { background:linear-gradient(145deg,#151d3b,#10162c); border:1px solid #30365b; border-radius:18px; padding:24px; margin-bottom:20px; color:#edf0ff; }
+        .coach-card h2,.coach-card h3 { color:#f2f3ff; margin-top:0; }
+        .coach-muted { color:#a9b3d3; line-height:1.7; }
+        .coach-tag { display:inline-block; padding:7px 11px; border-radius:20px; background:#27234f; color:#c7bdff; font-size:13px; margin:4px 4px 4px 0; }
+        .coach-action { border:1px solid #42416e; background:#201e43; color:#e8e5ff; padding:12px 14px; border-radius:12px; cursor:pointer; text-align:left; width:100%; margin-top:9px; font-size:15px; }
+        .coach-action:hover { background:#30275e; }
+        .coach-chat { min-height:360px; display:flex; flex-direction:column; }
+        .coach-messages { flex:1; display:flex; flex-direction:column; gap:12px; margin:18px 0; }
+        .coach-message { padding:13px 15px; border-radius:13px; line-height:1.65; max-width:95%; overflow-wrap:anywhere; }
+        .coach-message.bot { background:#202849; align-self:flex-start; }
+        .coach-message.user { background:#4b3d91; align-self:flex-end; }
+        .coach-form { display:flex; gap:10px; }
+        .coach-form input { flex:1; min-width:0; padding:13px; border-radius:11px; border:1px solid #3d456a; background:#0d1429; color:white; font-size:15px; }
+        .coach-form button,.coach-primary { background:linear-gradient(100deg,#6555dc,#8b5cf6); color:white; border:0; border-radius:11px; padding:13px 17px; cursor:pointer; font-weight:600; }
+        .coach-progress { height:8px; background:#292f4e; border-radius:20px; overflow:hidden; margin:12px 0; }
+        .coach-progress span { display:block; height:100%; background:linear-gradient(90deg,#6d5ce7,#b18cff); border-radius:20px; }
+        .coach-list { padding-left:20px; color:#c6cce2; line-height:1.9; }
+        .coach-note { font-size:13px; color:#a9b3d3; margin-top:12px; }
+        @media(max-width:850px) { .coach-layout { grid-template-columns:1fr; } }
+        @media(max-width:520px) { .coach-card { padding:17px; } .coach-form { flex-direction:column; } }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="logo">✦ CareerPilot</div>
+        <p class="sidebar-label">WORKSPACE</p>
+        <nav>
+            <a href="../index.html">⌂ Overview</a>
+            <a href="analysis.html">▤ Portfolio Analysis</a>
+            <a href="coach.html" class="active">✧ AI Coach</a>
+            <a href="training.html">✓ Evaluation Test</a>
+            <a href="progress.html">↗ Weekly Progress</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <span>✦</span> Your next opportunity starts here.
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">YOUR PERSONAL CAREER MENTOR</p>
+                <h1>AI Career Coach ✨</h1>
+                <p>Turn your portfolio insights into your next career move.</p>
+            </div>
+        </header>
+
+        <section class="coach-card">
+            <span class="coach-tag">PERSONALIZED GUIDANCE</span>
+            <h2>Let's build your next-level skill set.</h2>
+            <p class="coach-muted">
+                Your coach uses portfolio analysis, demonstrated skills and
+                identified gaps to help you make informed career decisions.
+            </p>
+            <div class="coach-tag">Skill development</div>
+            <div class="coach-tag">Project guidance</div>
+            <div class="coach-tag">Internship readiness</div>
+        </section>
+
+        <div class="coach-layout">
+            <section class="coach-card coach-chat">
+                <h2>Chat with your coach</h2>
+                <p class="coach-muted">Ask about your skills, projects or career direction.</p>
+
+                <div class="coach-messages" id="coachMessages" aria-live="polite">
+                    <div class="coach-message bot">
+                        Hey! 👋 I'm here to help you understand your portfolio
+                        and plan your next step. Choose a prompt below or ask
+                        me a question.
+                    </div>
+                </div>
+
+                <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
+                    <button class="coach-tag" type="button" data-prompt="Explain my skill gaps">Explain my skill gaps</button>
+                    <button class="coach-tag" type="button" data-prompt="How can I improve my projects?">Improve my projects</button>
+                    <button class="coach-tag" type="button" data-prompt="Am I ready for an internship?">Internship readiness</button>
+                </div>
+
+                <form class="coach-form" id="coachForm">
+                    <input id="coachInput" type="text"
+                           placeholder="Ask your career coach..."
+                           aria-label="Message to career coach" required>
+                    <button type="submit">Send ↗</button>
+                </form>
+                <p class="coach-note" id="coachStatus">
+                    Connect the coach to your AI backend to enable personalized responses.
+                </p>
+            </section>
+
+            <div>
+                <section class="coach-card">
+                    <h3>What your coach can help with</h3>
+                    <ul class="coach-list">
+                        <li>Understand portfolio analysis results</li>
+                        <li>Choose which skill gap to tackle first</li>
+                        <li>Improve project quality and documentation</li>
+                        <li>Prepare for technical interviews</li>
+                        <li>Identify suitable internships and roles</li>
+                    </ul>
+                </section>
+
+                <section class="coach-card">
+                    <h3>Your coaching principles</h3>
+                    <p class="coach-muted">Evidence first. Practical learning. Consistent progress.</p>
+                    <div class="coach-progress"><span style="width:100%"></span></div>
+                    <p class="coach-muted">
+                        Recommendations should be based on available evidence,
+                        not assumed skills or invented scores.
+                    </p>
+                    <a class="coach-primary" href="analysis.html"
+                       style="display:inline-block;text-decoration:none">
+                        Review my analysis →
+                    </a>
+                </section>
+
+                <section class="coach-card">
+                    <h3>Ready to test your knowledge?</h3>
+                    <p class="coach-muted">
+                        Check your understanding with questions related to
+                        your claimed skills and portfolio.
+                    </p>
+                    <a class="coach-primary" href="training.html"
+                       style="display:inline-block;text-decoration:none">
+                        Take evaluation →
+                    </a>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+    // Frontend interaction only. Replace this handler with the real AI API call.
+    const coachForm = document.getElementById("coachForm");
+    const coachInput = document.getElementById("coachInput");
+    const coachMessages = document.getElementById("coachMessages");
+    const coachStatus = document.getElementById("coachStatus");
+
+    function addCoachMessage(text, type) {
+        const message = document.createElement("div");
+        message.className = "coach-message " + type;
+        message.textContent = text;
+        coachMessages.appendChild(message);
+        coachMessages.scrollTop = coachMessages.scrollHeight;
+    }
+
+    document.querySelectorAll("[data-prompt]").forEach(button => {
+        button.addEventListener("click", () => {
+            coachInput.value = button.dataset.prompt;
+            coachInput.focus();
+        });
+    });
+
+    coachForm.addEventListener("submit", event => {
+        event.preventDefault();
+        const question = coachInput.value.trim();
+        if (!question) return;
+
+        addCoachMessage(question, "user");
+        coachInput.value = "";
+        coachStatus.textContent =
+            "Your message is ready. Connect this form to the AI coach endpoint to receive a real response.";
+    });
+</script>
+</body>
+</html>
