@@ -1,5 +1,6 @@
 import os
 import re
+import base64
 import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,7 +18,6 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# CORS Middleware added so your frontend UI can communicate locally without being blocked
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,7 +28,6 @@ app.add_middleware(
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Request model for handling incoming JSON body from the UI
 class EvaluationRequest(BaseModel):
     github_url: str = Field(description="Public GitHub repository URL (e.g., https://github.com/owner/repo)")
     job_description: str = Field(description="Target job posting text or requirements.")
@@ -71,7 +70,6 @@ def fetch_github_repo_data(github_url: str) -> str:
     readme_content = "No README found."
     if readme_res.status_code == 200:
         readme_data = readme_res.json()
-        import base64
         try:
             readme_content = base64.b64decode(readme_data["content"]).decode("utf-8")
         except Exception:
@@ -92,7 +90,8 @@ def read_root():
     return {
         "status": "Online",
         "team": "DeLuLu VibeCoders",
-        "project": "AI Career Coach (W-PS-2 - GitHub Integration)"
+        "project": "AI Career Coach (W-PS-2 - GitHub Integration)",
+        "model": "gemini-3.8-flash"
     }
 
 @app.post("/api/evaluate-repo", response_model=EvaluationReport)
@@ -118,7 +117,7 @@ def evaluate_github_repo(request: EvaluationRequest):
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.8-flash',
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -131,3 +130,19 @@ def evaluate_github_repo(request: EvaluationRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {str(e)}")
+
+@app.post("/api/check-updates")
+def check_github_updates(request: EvaluationRequest):
+    """Weekly updates polling endpoint for the UI tab."""
+    try:
+        report = evaluate_github_repo(request)
+        return {
+            "status": "success",
+            "notification": {
+                "title": "Weekly Update Checked 🚀",
+                "message": "Repository analyzed successfully via Gemini 3.8 Flash."
+            },
+            "data": report
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
